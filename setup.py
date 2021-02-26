@@ -1,0 +1,54 @@
+import os
+import os.path
+
+from setuptools import setup, find_packages
+
+
+root = os.path.abspath(os.path.dirname(__file__))
+with open(os.path.join(root, 'README.md'), 'rb') as readme:
+    long_description = readme.read().decode('utf-8')
+
+
+setup(
+    name='humanmark',
+    packages=find_packages(),
+    version='1.0.0',
+    description='Human-friendly markdown generator.',
+    long_description=long_description,
+    long_description_content_type='text/markdown',
+    author='Tyler Kennedy',
+    author_email='tk@tkte.ch',
+    url='http://github.com/TkTech/humanmark',
+    keywords=['markdown'],
+    zip_safe=False,
+    classifiers=[
+        'Programming Language :: Python :: 3',
+        'License :: OSI Approved :: MIT License',
+        'Operating System :: OS Independent',
+        'Development Status :: 3 - Alpha',
+        'Intended Audience :: Developers',
+    ],
+    extras_require={
+        'tests': [
+            'pytest',
+            'pytest-watch',
+            'pytest-cov'
+        ],
+        'cli': [
+            'click'
+        ],
+        'release': [
+            'sphinx',
+            'guzzle_sphinx_theme'
+        ]
+    },
+    install_requires=[
+        'markdown-it-py'
+    ],
+    python_requires='>=3.6',
+    entry_points={
+        'console_scripts': [
+            'humanmark=humanmark.cli:cli'
+        ]
+    }
+)
