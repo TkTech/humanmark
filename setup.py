@@ -12,7 +12,7 @@ with open(os.path.join(root, 'README.md'), 'rb') as readme:
 setup(
     name='humanmark',
     packages=find_packages(),
-    version='0.3.1',
+    version='0.3.2',
     description='Human-friendly markdown.',
     long_description=long_description,
     long_description_content_type='text/markdown',
