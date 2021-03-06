@@ -29,7 +29,7 @@ setup(
         'Intended Audience :: Developers',
     ],
     extras_require={
-        'tests': [
+        'test': [
             'pytest',
             'pytest-watch',
             'pytest-cov'

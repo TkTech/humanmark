@@ -8,7 +8,7 @@ HumanMark has good test coverage via pytest. Install the extras with:
 
 .. code::
 
-    pip install -e ".[tests]"
+    pip install -e ".[test]"
     pip install -e ".[cli]"
 
 ... and run the tests with:
