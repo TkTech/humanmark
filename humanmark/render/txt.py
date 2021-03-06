@@ -25,14 +25,19 @@ class TXTRenderer(Renderer):
 
     def render(self, node: ast.Node) -> str:
         output = []
-        for text in node.find(ast.Text, depth=-1):
-            if self.opts.ignore_code_blocks:
-                if text.contained_by(ast.CodeBlock):
-                    continue
+        types_to_skip = []
 
-            if self.opts.ignore_inline_code:
-                if text.contained_by(ast.InlineCode):
-                    continue
+        if self.opts.ignore_code_blocks:
+            types_to_skip.append(ast.CodeBlock)
+
+        if self.opts.ignore_inline_code:
+            types_to_skip.append(ast.InlineCode)
+
+        types_to_skip = tuple(types_to_skip)
+
+        for text in node.find(ast.Text, depth=-1):
+            if types_to_skip and text.contained_by(types_to_skip):
+                continue
 
             text = text.content
             if self.opts.strip_punctation:

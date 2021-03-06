@@ -1,7 +1,7 @@
 import io
 import sys
 import itertools
-from typing import Iterator, Dict
+from typing import Iterator, Dict, Union, Sequence
 
 from collections.abc import Iterable
 
@@ -380,10 +380,14 @@ class Node(metaclass=NodeMeta):
         # Chainable
         return self
 
-    def contained_by(self, of_type: 'Node') -> bool:
+    def contained_by(self, of_type: Union['Node', Sequence['Node']]) -> bool:
         """
         Returns ``True`` if this node is contained by a node ``of_type``, not
         just as a direct parent but anywhere in the hierarchy.
+
+        `of_type` may also be a list of types, in which case this method
+        with return `True` if this node is contained by *any* of the given
+        types.
         """
         node = self.parent
         while node:

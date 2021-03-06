@@ -134,3 +134,11 @@ def test_replace(fragment):
 def test_iterable(fragment):
     """Ensure we can iterate over a node."""
     assert len(fragment) == 2
+
+
+def test_contained(fragment):
+    """Ensure we can check node hierarchy for parent type."""
+    text = fragment.find_one(ast.Paragraph / ast.Text)
+    assert text.contained_by(ast.Paragraph)
+    assert text.contained_by(ast.Fragment)
+    assert text.contained_by((ast.Paragraph, ast.Fragment))
