@@ -40,4 +40,4 @@ jobs:
 
     - name: Publishing documentation
       run: |
-        ghp-import -n -c humanmark.tkte.ch -p docs/_build/html
+        ghp-import -n -c humanmark.tkte.ch -p docs/build/html
