@@ -9,7 +9,7 @@ Editing existing markdown is trivial. Maybe we want to uppercase every
 header:
 
 ```python
-from humanmark import loads, Header, (text
+from humanmark import loads, Header, Text
 
 fragment = loads('''# Hello World!
 
