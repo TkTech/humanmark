@@ -42,7 +42,8 @@ setup(
             'sphinx-click',
             'furo',
             'twine',
-            'ghp-import'
+            'ghp-import',
+            'bump2version'
         ]
     },
     install_requires=[
