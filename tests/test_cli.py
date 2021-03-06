@@ -14,3 +14,14 @@ def test_tree_command(request):
     ])
     assert result.exit_code == 0
     assert len(result.output.split('\n')) == 7
+
+
+def test_render_command(request):
+    """Ensure the `humanmark render <source>` command works as expected."""
+    runner = CliRunner()
+    result = runner.invoke(cli, [
+        'render',
+        '--renderer=json',
+        str(Path(request.fspath.dirname) / 'data' / 'hello_world.md')
+    ])
+    assert result.exit_code == 0

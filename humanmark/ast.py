@@ -471,6 +471,14 @@ class Node(metaclass=NodeMeta):
     def __eq__(self, other) -> bool:
         return isinstance(other, self.__class__) and self._re_eq(other)
 
+    def to_dict(self):
+        return {
+            'type': self.of_type,
+            'children': [
+                child.to_dict() for child in self
+            ]
+        }
+
     @property
     def of_type(self) -> str:
         return self.__class__.__name__.lower()
@@ -575,6 +583,12 @@ class HTMLBlock(Leaf):
                 other.content == self.content and
                 self._re_eq(other))
 
+    def to_dict(self):
+        return {
+            **super().to_dict(),
+            'content': self.content
+        }
+
 
 class HTMLInline(Inline):
     def __init__(self, content: str, *, line_no=0, children=None):
@@ -588,6 +602,12 @@ class HTMLInline(Inline):
         return (isinstance(other, self.__class__) and
                 other.content == self.content and
                 self._re_eq(other))
+
+    def to_dict(self):
+        return {
+            **super().to_dict(),
+            'content': self.content
+        }
 
 
 class Header(Container):
@@ -605,6 +625,12 @@ class Header(Container):
         return (isinstance(other, self.__class__) and
                 other.level == self.level and
                 self._re_eq(other))
+
+    def to_dict(self):
+        return {
+            **super().to_dict(),
+            'level': self.level
+        }
 
 
 class Paragraph(Container):
@@ -629,6 +655,12 @@ class List(Container):
 
     def is_allowed_child(self, child: Node) -> bool:
         return isinstance(child, ListItem)
+
+    def to_dict(self):
+        return {
+            **super().to_dict(),
+            'start': self.start
+        }
 
 
 class ListItem(Container):
@@ -665,6 +697,12 @@ class ListItem(Container):
             )
 
         self._bullet = value
+
+    def to_dict(self):
+        return {
+            **super().to_dict(),
+            'bullet': self.bullet
+        }
 
 
 class BlockQuote(Container):
@@ -710,6 +748,14 @@ class CodeBlock(Container):
                 other.fenced == self.fenced and
                 other.fencechar == self.fencechar and
                 self._re_eq(other))
+
+    def to_dict(self):
+        return {
+            **super().to_dict(),
+            'infostring': self.infostring,
+            'fenced': self.fenced,
+            'fencechar': self.fencechar
+        }
 
     def is_allowed_child(self, child: Node) -> bool:
         return isinstance(child, Text)
@@ -780,8 +826,17 @@ class Link(Inline):
     def __eq__(self, other):
         return (isinstance(other, self.__class__) and
                 other.url == self.url and
+                other.title == self.title and
                 other.reference == self.reference and
                 self._re_eq(other))
+
+    def to_dict(self):
+        return {
+            **super().to_dict(),
+            'url': self.url,
+            'title': self.title,
+            'reference': self.reference
+        }
 
     @property
     def is_autolink(self):
@@ -823,9 +878,18 @@ class Image(Inline):
                 other.reference == self.reference and
                 self._re_eq(other))
 
+    def to_dict(self):
+        return {
+            **super().to_dict(),
+            'url': self.url,
+            'title': self.title,
+            'reference': self.reference
+        }
+
 
 class InlineCode(Inline):
     pass
+
 
 class SoftBreak(Inline):
     """In markdown, a softbreak represents a literal newline (``\\n``).

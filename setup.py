@@ -55,7 +55,9 @@ setup(
             'humanmark=humanmark.cli:cli'
         ],
         'humanmark.renderers': (
-            'markdown = humanmark.render.markdown:MarkdownRenderer'
+            'markdown = humanmark.render.markdown:MarkdownRenderer\n'
+            'json = humanmark.render.json:JSONRenderer\n'
+            'txt = humanmark.render.txt:TXTRenderer'
         ),
         'humanmark.backends': (
             'markdown_it = humanmark.backends.markdown_it:MarkdownItBackend'
