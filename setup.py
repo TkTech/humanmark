@@ -53,6 +53,12 @@ setup(
     entry_points={
         'console_scripts': [
             'humanmark=humanmark.cli:cli'
-        ]
+        ],
+        'humanmark.renderers': (
+            'markdown = humanmark.render.markdown:MarkdownRenderer'
+        ),
+        'humanmark.backends': (
+            'markdown_it = humanmark.backends.markdown_it:MarkdownItBackend'
+        )
     }
 )

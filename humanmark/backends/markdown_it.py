@@ -24,6 +24,8 @@ class MarkdownItBackend(Backend):
 
     A node's children and line mappings are populated for you.
     """
+    DESCRIPTION = 'markdown-it-py powered backend.'
+
     def parse(self, content: str) -> ast.Fragment:
         md = MarkdownIt().enable('strikethrough')
 

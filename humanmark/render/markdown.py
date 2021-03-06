@@ -21,9 +21,8 @@ class MarkdownRenderer(Renderer):
     """
     Renders a HumanMark AST as Markdown.
     """
-    @property
-    def options_class(self):
-        return Options
+    OPTIONS_CLASS = Options
+    DESCRIPTION = 'Renders to a Markdown document.'
 
     def render(self, node: ast.Node) -> str:
         return self.render_ex(node, joined_by='\n\n')

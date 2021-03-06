@@ -47,7 +47,7 @@ generator bi-directional.
 
 HumanMark has good test coverage via pytest. Install the extras with:
 
-    pip install -e ".[tests]"
+    pip install -e ".[test]"
     pip install -e ".[cli]"
 
 ... and run the tests with:
