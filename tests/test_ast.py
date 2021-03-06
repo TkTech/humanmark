@@ -49,7 +49,7 @@ def test_text_children():
         ])
 
 
-def test_find(fragment):
+def test_find_simple(fragment):
     """Ensure find() and find_one() return expected results."""
     # Find, with a depth of 0 by default.
     result = list(fragment.find(ast.Text))
@@ -73,6 +73,14 @@ def test_find(fragment):
     assert result is None
 
 
+def test_find_paths(fragment):
+    """Ensure find() works with a NodePath."""
+    result = fragment.find_one(ast.Paragraph / ast.Text)
+    assert result == ast.Text('Hello Mars!')
+
+    result = fragment.find_one(ast.Text)
+
+
 def test_extend():
     """Ensure we can grow a node's children."""
     fragment = ast.Fragment()
@@ -94,20 +102,12 @@ def test_extend():
         fragment.extend([1])
 
 
+def test_remove(fragment):
+    assert fragment.find_one(ast.Paragraph)
+    fragment.remove(ast.Paragraph)
+    assert fragment.find_one(ast.Paragraph) is None
+
+
 def test_iterable(fragment):
     """Ensure we can iterate over a node."""
-    assert len(list(fragment)) == 2
-
-
-def test_iadd(fragment):
-    """Ensure += operator works."""
-    fragment += ast.Text('Hello Venus!')
-    result = fragment.find_one(ast.Text, f=lambda n: 'Venus' in n.content)
-    assert result is not None
-
-
-def test_getitem(fragment):
-    """Ensure shortcut for getting children with __getitem__/[] works."""
-    p = fragment.find_one(ast.Paragraph)
-    assert p[ast.Text] is not None
-    assert p['text'] is not None
+    assert len(fragment) == 2

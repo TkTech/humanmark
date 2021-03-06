@@ -9,17 +9,15 @@ Editing existing markdown is trivial. Maybe we want to uppercase every
 header:
 
 ```python
-from humanmark import parser
-from humanmark.ast import Header, Text
+from humanmark import loads, Header, (text
 
-fragment = parser.parse('''# Hello World!
+fragment = loads('''# Hello World!
 
 This is a sample document.
 ''')
 
-for header in fragment.find(Header):
-    for text in header.find(Text):
-        text.content = text.content.upper()
+for text in fragment.find(Header / Text):
+    text.content = text.content.upper()
 
 fragment.pprint()
 ```

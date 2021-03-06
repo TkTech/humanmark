@@ -12,8 +12,8 @@ with open(os.path.join(root, 'README.md'), 'rb') as readme:
 setup(
     name='humanmark',
     packages=find_packages(),
-    version='1.0.0',
-    description='Human-friendly markdown generator.',
+    version='0.1.0',
+    description='Human-friendly markdown.',
     long_description=long_description,
     long_description_content_type='text/markdown',
     author='Tyler Kennedy',
@@ -39,13 +39,15 @@ setup(
         ],
         'release': [
             'sphinx',
-            'guzzle_sphinx_theme'
+            'sphinx-click',
+            'furo',
+            'twine'
         ]
     },
     install_requires=[
         'markdown-it-py'
     ],
-    python_requires='>=3.6',
+    python_requires='>=3.7',
     entry_points={
         'console_scripts': [
             'humanmark=humanmark.cli:cli'

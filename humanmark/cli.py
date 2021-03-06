@@ -7,7 +7,7 @@ except ImportError:
         ' If you are using pip, do `pip install "humanmark[cli]"`.'
     )
 
-from humanmark import parser
+from humanmark import loads, dumps
 
 
 @click.group()
@@ -15,13 +15,20 @@ def cli():
     """Utilities for working with markdown."""
 
 
+@cli.command('tidy')
+@click.argument('source', type=click.File('rt'))
+def tidy(source):
+    fragment = loads(source.read())
+    click.echo(dumps(fragment))
+
+
 @cli.command('tree')
 @click.argument('source', type=click.File('rt'))
 def tree(source):
     """Pretty-print a visual representation of a parsed markdown file's
     AST (abstract syntax tree)."""
-    fragment = parser.parse(source.read())
-    click.echo_via_pager(fragment.pretty())
+    fragment = loads(source.read())
+    click.echo(fragment.pretty())
 
 
 if __name__ == '__main__':

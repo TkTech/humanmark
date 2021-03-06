@@ -1,10 +1,9 @@
-from humanmark import ast
-from humanmark.parser import parse
+from humanmark import loads, ast
 
 
 def test_block_tokens_to_ast():
     """Ensures every block can be converted to our AST."""
-    fragment = parse(
+    fragment = loads(
         # ATX header.
         '# Hello World!\n'
         # Block-level code.
@@ -94,15 +93,45 @@ def test_inline_tokens_to_ast():
 
     pairs = (
         ('simple text', ast.Text('simple text')),
-        ('`inline code`', ast.InlineCode('inline code')),
+        ('`inline code`', ast.InlineCode(children=[
+            ast.Text('inline code')
+        ])),
         ('~~strike~~', ast.Strike(children=[ast.Text('strike')])),
         ('*emphasis*', ast.Emphasis(children=[ast.Text('emphasis')])),
         ('**strong**', ast.Strong(children=[ast.Text('strong')])),
-        ('<http://tkte.ch>', ast.Link('http://tkte.ch'))
+        ('<http://tkte.ch>', ast.Link('http://tkte.ch', children=[
+            ast.Text('http://tkte.ch')
+        ])),
+        ('[tkte.ch](https://tkte.ch)', ast.Link(
+            'https://tkte.ch',
+            children=[
+                ast.Text('tkte.ch')
+            ]
+        )),
+        ('[tkte.ch](https://tkte.ch "title")', ast.Link(
+            'https://tkte.ch',
+            title='title',
+            children=[
+                ast.Text('tkte.ch')
+            ]
+        )),
+        ('![tkte.ch](/image.png)', ast.Image(
+            '/image.png',
+            children=[
+                ast.Text('tkte.ch')
+            ]
+        )),
+        ('![tkte.ch](/image.png "alt")', ast.Image(
+            '/image.png',
+            title='alt',
+            children=[
+                ast.Text('tkte.ch')
+            ]
+        ))
     )
 
     for markdown, node in pairs:
-        assert parse(markdown) == ast.Fragment(children=[
+        assert loads(markdown) == ast.Fragment(children=[
             ast.Paragraph(children=[
                 node
             ])
