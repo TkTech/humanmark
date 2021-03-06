@@ -1,7 +1,7 @@
 import io
 import sys
 import itertools
-from typing import Iterator
+from typing import Iterator, Dict
 
 from collections.abc import Iterable
 
@@ -356,6 +356,8 @@ class Node(metaclass=NodeMeta):
         """Replaces this node with ``replacement`` and unlinks it from its
         parent.
         """
+        replacement.parent = self.parent
+
         if self.prev is not None:
             self.prev.next = replacement
             replacement.prev = self.prev
@@ -471,7 +473,8 @@ class Node(metaclass=NodeMeta):
     def __eq__(self, other) -> bool:
         return isinstance(other, self.__class__) and self._re_eq(other)
 
-    def to_dict(self):
+    def to_dict(self) -> Dict:
+        """Recursively dump this node and all of its children to a dict."""
         return {
             'type': self.of_type,
             'children': [

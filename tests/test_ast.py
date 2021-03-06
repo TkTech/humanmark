@@ -103,9 +103,32 @@ def test_extend():
 
 
 def test_remove(fragment):
+    """Ensure we can remove a node by matching it."""
     assert fragment.find_one(ast.Paragraph)
     fragment.remove(ast.Paragraph)
     assert fragment.find_one(ast.Paragraph) is None
+
+
+def test_replace(fragment):
+    """Ensure we can do an in-place replacement of a node."""
+    # Check special logic for replacing first node.
+    fragment.first.replace(ast.Text('Hello Jupiter!'))
+    assert 'Jupiter' in fragment.first.content
+
+    # Check replace of a child that isn't first or last.
+    fragment.find_one(
+        ast.Paragraph
+    ).replace(
+        ast.Paragraph(children=[
+            ast.Text('Hello Pluto!')
+        ])
+    )
+    assert 'Pluto' in fragment.find_one(ast.Paragraph / ast.Text).content
+
+    # Check special logic for replacing last node.
+    fragment.last.replace(ast.Text('Hello Saturn!'))
+
+    assert 'Saturn' in fragment.last.content
 
 
 def test_iterable(fragment):
