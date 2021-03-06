@@ -777,6 +777,12 @@ class Text(Inline):
         return (isinstance(other, self.__class__) and
                 other.content == self.content)
 
+    def to_dict(self):
+        return {
+            'type': self.of_type,
+            'content': self.content
+        }
+
     def is_allowed_child(self, child: Node) -> bool:
         return False
 
