@@ -41,7 +41,8 @@ setup(
             'sphinx',
             'sphinx-click',
             'furo',
-            'twine'
+            'twine',
+            'ghp-import'
         ]
     },
     install_requires=[

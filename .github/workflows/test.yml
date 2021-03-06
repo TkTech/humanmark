@@ -28,3 +28,11 @@ jobs:
     - name: Running tests
       run: |
         pytest
+
+    - name: Installing release dependencies
+      run: |
+        pip install -e '.[release]'
+
+    - name: Building documentation
+      run: |
+        cd docs && make clean && make html

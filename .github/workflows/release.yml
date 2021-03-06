@@ -24,12 +24,20 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         python -m pip install --upgrade setuptools
-        pip install wheel twine
+        pip install -e ".[release]"
 
-    - name: Publishing
+    - name: Building documentation
+      run: |
+        cd docs && make clean && make html
+
+    - name: Publishing to pypi
       env:
         TWINE_USERNAME: ${{ secrets.PYPI_USERNAME }}
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
         python setup.py sdist
         twine upload dist/*
+
+    - name: Publishing documentation
+      run: |
+        ghp-import -n -c humanmark.tkte.ch -p docs/_build/html
