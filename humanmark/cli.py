@@ -24,6 +24,11 @@ def dynamic_command(expand_renderer=False, expand_backend=False):
             # we don't know what renderer/backend to use. `make_parser` is
             # documented, but isn't even used by the --help command!
             params = super().get_params(ctx)
+            # sphinx-click, which generates our CLI documentation, somehow
+            # gets here without ever generating the context in the parent
+            # group.
+            ctx.ensure_object(dict)
+
             renderer: Renderer = ctx.obj.get('renderer')
             if expand_renderer and renderer:
                 # A renderer was specified, so we want to parse out its options
@@ -54,7 +59,7 @@ def dynamic_command(expand_renderer=False, expand_backend=False):
 @click.option(
     '--backend',
     type=click.Choice(list(available_backends().keys())),
-    help='Specify the backend used to parse markdown.',
+    help='Specify the backend used to parse documents.',
     default='markdown_it'
 )
 @click.option(
@@ -73,11 +78,11 @@ def cli(ctx, backend, renderer):
 
 @cli.command('render', cls=dynamic_command(expand_renderer=True))
 @click.argument('source', type=click.File('rt'))
-@click.pass_obj
-def render_command(obj, source, **kwargs):
+@click.pass_context
+def render_command(ctx, source, **kwargs):
     """Parse and render `source`."""
-    backend = obj['backend']()
-    renderer = obj['renderer']()
+    backend = ctx.obj['backend']()
+    renderer = ctx.obj['renderer']()
 
     fragment = loads(source.read(), backend=backend)
     click.echo(dumps(fragment, renderer=renderer))
@@ -85,11 +90,11 @@ def render_command(obj, source, **kwargs):
 
 @cli.command('tree')
 @click.argument('source', type=click.File('rt'))
-@click.pass_obj
-def tree(obj, source):
+@click.pass_context
+def tree(ctx, source):
     """Pretty-print a visual representation of a parsed markdown file's
     AST (abstract syntax tree)."""
-    backend = obj['backend']()
+    backend = ctx.obj['backend']()
     fragment = loads(source.read(), backend=backend)
     click.echo(fragment.pretty())
 
