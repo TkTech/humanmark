@@ -25,7 +25,35 @@ class MarkdownRenderer(Renderer):
     DESCRIPTION = 'Renders to a Markdown document.'
 
     def render(self, node: ast.Node) -> str:
-        return self.render_ex(node, joined_by='\n\n')
+        contents = self.render_ex(node, joined_by='\n\n')
+
+        # Gather all of the references used in the document and emit them
+        # at the end.
+        links = {
+            link.reference: link
+            for link in node.find(
+                ast.Link,
+                f=lambda l: l.reference is not None,
+                depth=-1
+            )
+        }
+
+        references = []
+
+        for key, link in links.items():
+            if link.title:
+                references.append(
+                    f'[{link.reference}]: {link.url} "{link.title}"'
+                )
+            else:
+                references.append(
+                    f'[{link.reference}]: {link.url}'
+                )
+
+        newlines = '\n' * (2 - sum(1 for c in contents[-2:] if c == '\n'))
+        references = '\n'.join(references)
+
+        return f'{contents}{newlines}{references}'
 
     def render_ex(self, node: ast.Node, *, joined_by='') -> str:
         content = []
