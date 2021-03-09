@@ -21,6 +21,13 @@ many annoying markdown operations trivial.
     a feature? Found a bug? Please, make an issue on `GitHub`_.
 
 
+Installation
+------------
+
+HumanMark is available from PyPi for CPython3.7+ and PyPy:
+
+    pip install humanmark
+
 
 Building an AST
 ---------------
