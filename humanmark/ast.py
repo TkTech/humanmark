@@ -1,9 +1,7 @@
 import io
 import sys
 import itertools
-from typing import Iterator, Dict, Union, Sequence
-
-from collections.abc import Iterable
+from typing import Iterator, Dict, Union, Sequence, Iterable
 
 
 class NodePath:
