@@ -201,9 +201,10 @@ class Node(metaclass=NodeMeta):
                     )
 
                 if self.first is None:
+                    child.unlink()
+                    child.parent = self
                     self.first = child
                     self.last = child
-                    child.parent = self
                 else:
                     self.last >> child
             elif isinstance(child, Iterable):
@@ -352,6 +353,15 @@ class Node(metaclass=NodeMeta):
         # Chainable
         return self
 
+    def delete(self) -> 'Node':
+        """Deletes the current node and returns the next sibling.
+
+        Useful for traversing over child nodes and removing some.
+        """
+        next_node = self.next
+        self.unlink()
+        return next_node
+
     def replace(self, replacement: 'Node') -> 'Node':
         """Replaces this node with ``replacement`` and unlinks it from its
         parent.
@@ -397,61 +407,88 @@ class Node(metaclass=NodeMeta):
 
         return False
 
+    def prepend_siblings(self, others: Iterable['Node']) -> 'Node':
+        """Prepends all nodes in `others` to this node.
+
+        Returns the node at the end of `others`.
+        """
+        if self.parent is None:
+            raise ValueError(
+                'Cannot add a sibling to a node a node with no parent.'
+            )
+
+        node = self
+        for other in others:
+            other.unlink()
+            if node.prev is not None:
+                node.prev.next = other
+                other.prev = node.prev
+            else:
+                other.prev = None
+
+            node.prev = other
+            other.next = node
+            other.parent = node.parent
+
+            if node.parent.first is node:
+                node.parent.first = other
+
+            node = other
+
+        return node
+
     def prepend_sibling(self, other: 'Node') -> 'Node':
-        """Inserts the node `other` before this node.
+        """Prepends the node `other` before this node.
 
         As a shortcut, the `<<` operator can be used instead. For example,
         to insert a header before an existing paragraph:
 
         .. code:: python
 
-            Paragraph(children=Text('Hello!') << Header(1)
+            Paragraph(children=[Text('Hello!')]) << Header(1)
+        """
+        return self.prepend_siblings([other])
+
+    def append_siblings(self, others: Iterable['Node']) -> 'Node':
+        """Appends all nodes in `others` after this node.
+
+        Returns the node at the end of `others`.
         """
         if self.parent is None:
             raise ValueError(
-                'Cannot prepend a node when this node does not have a parent.'
+                'Cannot add a sibling to a node a node with no parent.'
             )
 
-        if self.prev is not None:
-            self.prev.next = other
-            other.prev = self.prev
+        node = self
+        for other in others:
+            other.unlink()
 
-        self.prev = other
-        other.next = self
-        other.parent = self.parent
+            if node.next is not None:
+                node.next.prev = other
+                other.next = node.next
 
-        if self.parent.first is self:
-            self.parent.first = other
+            node.next = other
+            other.prev = node
+            other.parent = node.parent
 
-        return self
+            if node.parent.last is node:
+                node.parent.last = other
+
+            node = other
+
+        return node
 
     def append_sibling(self, other: 'Node') -> 'Node':
         """Inserts the node `other` after this node.
 
         As a shortcut, the `>>` operator can be used instead. For example,
-        to add a paragraph after an existing header:
+        to insert a paragraph after an existing header:
 
         .. code:: python
 
-            Header(1) >> Paragraph(children=Text('Hello!')
+            Header(1) >> Paragraph(children=[Text('Hello!')])
         """
-        if self.parent is None:
-            raise ValueError(
-                'Cannot append a node when this node does not have a parent.'
-            )
-
-        if self.next is not None:
-            self.next.prev = other
-            other.next = self.next
-
-        self.next = other
-        other.prev = self
-        other.parent = self.parent
-
-        if self.parent.last is self:
-            self.parent.last = other
-
-        return self
+        return self.append_siblings([other])
 
     __lshift__ = prepend_sibling
     __rshift__ = append_sibling
@@ -551,6 +588,10 @@ class Inline(Node):
 
     @property
     def is_container(self):
+        return False
+
+    @property
+    def is_leaf(self) -> bool:
         return False
 
 
@@ -910,3 +951,17 @@ class SoftBreak(Inline):
     Various rendering formats may discard a SoftBreak if it will have no
     impact on the final result, such as in HTML.
     """
+
+
+class Table(Container):
+    def __init__(self, headers=None, *, line_no=0, children=None):
+        super().__init__(line_no=line_no, children=children)
+        self.headers = headers
+
+
+class TableRow(Inline):
+    pass
+
+
+class TableColumn(Inline):
+    pass

@@ -67,13 +67,13 @@ class MarkdownRenderer(Renderer):
         return joined_by.join(content)
 
     def visit_fragment(self, node: ast.Fragment) -> Iterator[str]:
-        yield from (self.render_ex(child) for child in node)
+        yield self.render_ex(node, joined_by='\n\n')
 
     def visit_text(self, node: ast.Text) -> Iterator[str]:
         yield node.content
 
     def visit_paragraph(self, node: ast.Paragraph) -> Iterator[str]:
-        yield f'{self.render_ex(node)}'
+        yield self.render_ex(node)
 
     def visit_header(self, node: ast.Header) -> Iterator[str]:
         yield f'{"#" * node.level} {self.render_ex(node)}'
@@ -153,3 +153,6 @@ class MarkdownRenderer(Renderer):
         else:
             title = f' {node.title!r}' if node.title else ''
             yield f'![{self.render_ex(node)}]({node.url}{title})'
+
+    def visit_htmlblock(self, node: ast.HTMLBlock) -> Iterator[str]:
+        yield node.content

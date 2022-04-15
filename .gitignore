@@ -4,3 +4,4 @@ venv/
 .coverage
 docs/build/
 dist/
+*.idea/
