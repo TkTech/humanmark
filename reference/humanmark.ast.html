@@ -1,0 +1,658 @@
+<!doctype html>
+<html class="no-js">
+  <head><meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+    <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+<link rel="index" title="Index" href="../genindex.html" /><link rel="search" title="Search" href="../search.html" /><link rel="next" title="Contributing" href="../contributing.html" /><link rel="prev" title="Parsing &amp; Rendering" href="humanmark.parse.html" />
+
+    <meta name="generator" content="sphinx-4.5.0, furo 2022.04.07"/>
+        <title>AST - HumanMark 0.5.1 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo.css?digest=68f4518137b9aefe99b631505a2064c3c42c9852" />
+    <link rel="stylesheet" type="text/css" href="../_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
+    
+    
+
+
+<style>
+  body {
+    --color-code-background: #f8f8f8;
+  --color-code-foreground: black;
+  
+  }
+  @media not print {
+    body[data-theme="dark"] {
+      --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+    }
+    @media (prefers-color-scheme: dark) {
+      body:not([data-theme="light"]) {
+        --color-code-background: #202020;
+  --color-code-foreground: #d0d0d0;
+  
+      }
+    }
+  }
+</style></head>
+  <body>
+    
+    <script>
+      document.body.dataset.theme = localStorage.getItem("theme") || "auto";
+    </script>
+    
+
+<svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+  <symbol id="svg-toc" viewBox="0 0 24 24">
+    <title>Contents</title>
+    <svg stroke="currentColor" fill="currentColor" stroke-width="0" viewBox="0 0 1024 1024">
+      <path d="M408 442h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8zm-8 204c0 4.4 3.6 8 8 8h480c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8H408c-4.4 0-8 3.6-8 8v56zm504-486H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zm0 632H120c-4.4 0-8 3.6-8 8v56c0 4.4 3.6 8 8 8h784c4.4 0 8-3.6 8-8v-56c0-4.4-3.6-8-8-8zM115.4 518.9L271.7 642c5.8 4.6 14.4.5 14.4-6.9V388.9c0-7.4-8.5-11.5-14.4-6.9L115.4 505.1a8.74 8.74 0 0 0 0 13.8z"/>
+    </svg>
+  </symbol>
+  <symbol id="svg-menu" viewBox="0 0 24 24">
+    <title>Menu</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-menu">
+      <line x1="3" y1="12" x2="21" y2="12"></line>
+      <line x1="3" y1="6" x2="21" y2="6"></line>
+      <line x1="3" y1="18" x2="21" y2="18"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-arrow-right" viewBox="0 0 24 24">
+    <title>Expand</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather-chevron-right">
+      <polyline points="9 18 15 12 9 6"></polyline>
+    </svg>
+  </symbol>
+  <symbol id="svg-sun" viewBox="0 0 24 24">
+    <title>Light mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="feather-sun">
+      <circle cx="12" cy="12" r="5"></circle>
+      <line x1="12" y1="1" x2="12" y2="3"></line>
+      <line x1="12" y1="21" x2="12" y2="23"></line>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+      <line x1="1" y1="12" x2="3" y2="12"></line>
+      <line x1="21" y1="12" x2="23" y2="12"></line>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+    </svg>
+  </symbol>
+  <symbol id="svg-moon" viewBox="0 0 24 24">
+    <title>Dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-moon">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none" />
+      <path d="M12 3c.132 0 .263 0 .393 0a7.5 7.5 0 0 0 7.92 12.446a9 9 0 1 1 -8.313 -12.454z" />
+    </svg>
+  </symbol>
+  <symbol id="svg-sun-half" viewBox="0 0 24 24">
+    <title>Auto light/dark mode</title>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="icon-tabler-shadow">
+      <path stroke="none" d="M0 0h24v24H0z" fill="none"/>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13 12h5" />
+      <path d="M13 15h4" />
+      <path d="M13 18h1" />
+      <path d="M13 9h4" />
+      <path d="M13 6h1" />
+    </svg>
+  </symbol>
+</svg>
+
+<input type="checkbox" class="sidebar-toggle" name="__navigation" id="__navigation">
+<input type="checkbox" class="sidebar-toggle" name="__toc" id="__toc">
+<label class="overlay sidebar-overlay" for="__navigation">
+  <div class="visually-hidden">Hide navigation sidebar</div>
+</label>
+<label class="overlay toc-overlay" for="__toc">
+  <div class="visually-hidden">Hide table of contents sidebar</div>
+</label>
+
+
+
+<div class="page">
+  <header class="mobile-header">
+    <div class="header-left">
+      <label class="nav-overlay-icon" for="__navigation">
+        <div class="visually-hidden">Toggle site navigation sidebar</div>
+        <i class="icon"><svg><use href="#svg-menu"></use></svg></i>
+      </label>
+    </div>
+    <div class="header-center">
+      <a href="../index.html"><div class="brand">HumanMark 0.5.1 documentation</div></a>
+    </div>
+    <div class="header-right">
+      <div class="theme-toggle-container theme-toggle-header">
+        <button class="theme-toggle">
+          <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+          <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+          <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+          <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+        </button>
+      </div>
+      <label class="toc-overlay-icon toc-header-icon no-toc" for="__toc">
+        <div class="visually-hidden">Toggle table of contents sidebar</div>
+        <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+      </label>
+    </div>
+  </header>
+  <aside class="sidebar-drawer">
+    <div class="sidebar-container">
+      
+      <div class="sidebar-sticky"><a class="sidebar-brand" href="../index.html">
+  
+  
+  <span class="sidebar-brand-text">HumanMark 0.5.1 documentation</span>
+  
+</a><form class="sidebar-search-container" method="get" action="../search.html" role="search">
+  <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
+  <input type="hidden" name="check_keywords" value="yes">
+  <input type="hidden" name="area" value="default">
+</form>
+<div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
+  <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../cli.html">CLI</a></li>
+<li class="toctree-l1 current has-children"><a class="reference internal" href="index.html">API Reference</a><input checked="" class="toctree-checkbox" id="toctree-checkbox-1" name="toctree-checkbox-1" role="switch" type="checkbox"/><label for="toctree-checkbox-1"><div class="visually-hidden">Toggle child pages in navigation</div><i class="icon"><svg><use href="#svg-arrow-right"></use></svg></i></label><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="humanmark.parse.html">Parsing &amp; Rendering</a></li>
+<li class="toctree-l2 current current-page"><a class="current reference internal" href="#">AST</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../contributing.html">Contributing</a></li>
+</ul>
+
+</div>
+</div>
+
+      </div>
+      
+    </div>
+  </aside>
+  <div class="main">
+    <div class="content">
+      <div class="article-container">
+        <a href="#" class="back-to-top muted-link">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+            <path d="M13 20h-2V8l-5.5 5.5-1.42-1.42L12 4.16l7.92 7.92-1.42 1.42L13 8v12z"></path>
+          </svg>
+          <span>Back to top</span>
+        </a>
+        <div class="content-icon-container"><div class="theme-toggle-container theme-toggle-content">
+            <button class="theme-toggle">
+              <div class="visually-hidden">Toggle Light / Dark / Auto color theme</div>
+              <svg class="theme-icon-when-auto"><use href="#svg-sun-half"></use></svg>
+              <svg class="theme-icon-when-dark"><use href="#svg-moon"></use></svg>
+              <svg class="theme-icon-when-light"><use href="#svg-sun"></use></svg>
+            </button>
+          </div>
+          <label class="toc-overlay-icon toc-content-icon no-toc" for="__toc">
+            <div class="visually-hidden">Toggle table of contents sidebar</div>
+            <i class="icon"><svg><use href="#svg-toc"></use></svg></i>
+          </label>
+        </div>
+        <article role="main">
+          <section id="ast">
+<h1>AST<a class="headerlink" href="#ast" title="Permalink to this headline">#</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="humanmark.ast.Node">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">humanmark.ast.</span></span><span class="sig-name descname"><span class="pre">Node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_no</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#humanmark.ast.Node" title="Permalink to this definition">#</a></dt>
+<dd><p>The base class for all types of nodes in the AST.</p>
+<div class="note admonition">
+<p class="admonition-title">Internals</p>
+<p>Internally, Node’s are a doubly-linked list. This isn’t terribly
+efficient in Python, but makes complex structure manipulation trivial.
+Since we’re human-focused, this trade-off in favour of usability is
+well worth it.</p>
+</div>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="humanmark.ast.Node.first">
+<span class="sig-name descname"><span class="pre">first</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#humanmark.ast.Node" title="humanmark.ast.Node"><span class="pre">humanmark.ast.Node</span></a></em><a class="headerlink" href="#humanmark.ast.Node.first" title="Permalink to this definition">#</a></dt>
+<dd><p>The first child in the node.</p>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="humanmark.ast.Node.last">
+<span class="sig-name descname"><span class="pre">last</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#humanmark.ast.Node" title="humanmark.ast.Node"><span class="pre">humanmark.ast.Node</span></a></em><a class="headerlink" href="#humanmark.ast.Node.last" title="Permalink to this definition">#</a></dt>
+<dd><p>The last child in the node.</p>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="humanmark.ast.Node.parent">
+<span class="sig-name descname"><span class="pre">parent</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#humanmark.ast.Node" title="humanmark.ast.Node"><span class="pre">humanmark.ast.Node</span></a></em><a class="headerlink" href="#humanmark.ast.Node.parent" title="Permalink to this definition">#</a></dt>
+<dd><p>The parent of this node.</p>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="humanmark.ast.Node.next">
+<span class="sig-name descname"><span class="pre">next</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#humanmark.ast.Node" title="humanmark.ast.Node"><span class="pre">humanmark.ast.Node</span></a></em><a class="headerlink" href="#humanmark.ast.Node.next" title="Permalink to this definition">#</a></dt>
+<dd><p>The next sibling node.</p>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="humanmark.ast.Node.prev">
+<span class="sig-name descname"><span class="pre">prev</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><a class="reference internal" href="#humanmark.ast.Node" title="humanmark.ast.Node"><span class="pre">humanmark.ast.Node</span></a></em><a class="headerlink" href="#humanmark.ast.Node.prev" title="Permalink to this definition">#</a></dt>
+<dd><p>The previous sibling node.</p>
+</dd></dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="humanmark.ast.Node.line_no">
+<span class="sig-name descname"><span class="pre">line_no</span></span><a class="headerlink" href="#humanmark.ast.Node.line_no" title="Permalink to this definition">#</a></dt>
+<dd><p>The source line number, if known.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="humanmark.ast.Node.pprint">
+<span class="sig-name descname"><span class="pre">pprint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent=''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">file=&lt;_io.TextIOWrapper</span> <span class="pre">name='&lt;stdout&gt;'</span> <span class="pre">mode='w'</span> <span class="pre">encoding='utf-8'&gt;</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">is_last=False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_line_no=True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#humanmark.ast.Node.pprint" title="Permalink to this definition">#</a></dt>
+<dd><p>Pretty-print this node and all of its children to a file-like
+object.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>indent</strong> – The indent to apply at the start of each line.
+[default: ‘’]</p></li>
+<li><p><strong>file</strong> – IO object for output. [default: sys.stdout]</p></li>
+<li><p><strong>is_last</strong> – True if this is the last child in a sequence.
+[default: False]</p></li>
+<li><p><strong>show_line_no</strong> – True if source line numbers should be shown.
+[default: True]</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="humanmark.ast.Node.pretty">
+<span class="sig-name descname"><span class="pre">pretty</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">indent</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">''</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show_line_no</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#humanmark.ast.Node.pretty" title="Permalink to this definition">#</a></dt>
+<dd><p>Pretty-print this node and all of its children, returning the
+result as a string.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>indent</strong> – The indent to apply at the start of each line.
+[default: ‘’]</p></li>
+<li><p><strong>show_line_no</strong> – True if source line numbers should be shown.
+[default: True]</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="humanmark.ast.Node.find">
+<span class="sig-name descname"><span class="pre">find</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">of_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#humanmark.ast.Node.find" title="Permalink to this definition">#</a></dt>
+<dd><p>Find and yield child nodes that match all given filters.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fragment</span> <span class="o">=</span> <span class="n">Fragment</span><span class="p">(</span><span class="n">children</span><span class="o">=</span><span class="p">[</span><span class="n">Text</span><span class="p">(</span><span class="s1">'Hello World!'</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">fragment</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">Text</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="#humanmark.ast.Node.find" title="humanmark.ast.Node.find"><code class="xref py py-func docutils literal notranslate"><span class="pre">find()</span></code></a> supports simple paths. For example, to get all the text
+under headers:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">text</span> <span class="ow">in</span> <span class="n">fragment</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">Header</span> <span class="o">/</span> <span class="n">Text</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">text</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><a class="reference internal" href="#humanmark.ast.Node.find" title="humanmark.ast.Node.find"><code class="xref py py-func docutils literal notranslate"><span class="pre">find()</span></code></a> supports slicing on paths, to skip items, get a range
+of items, or to get a specific index.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">list_item</span> <span class="ow">in</span> <span class="n">fragment</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">List</span> <span class="o">/</span> <span class="n">ListItem</span><span class="p">[::</span><span class="mi">2</span><span class="p">]):</span>
+<span class="gp">... </span>    <span class="nb">print</span><span class="p">(</span><span class="n">list_item</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>of_type</strong> – A Node subclass to match to.</p></li>
+<li><p><strong>f</strong> – Any callable object which will be given the node.</p></li>
+<li><p><strong>depth</strong> – The maximum depth to search for matching children.
+By default only immediate children are checked. Passing
+a negative value will search with no limit.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="humanmark.ast.Node.find_one">
+<span class="sig-name descname"><span class="pre">find_one</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">default</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#humanmark.ast.Node.find_one" title="Permalink to this definition">#</a></dt>
+<dd><p>Same as <a class="reference internal" href="#humanmark.ast.Node.find" title="humanmark.ast.Node.find"><code class="xref py py-func docutils literal notranslate"><span class="pre">find()</span></code></a>, but returns only the first match,
+or <cite>None</cite> if no result was found.</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fragment</span> <span class="o">=</span> <span class="n">Fragment</span><span class="p">(</span><span class="n">children</span><span class="o">=</span><span class="p">[</span><span class="n">Text</span><span class="p">(</span><span class="s1">'Hello World!'</span><span class="p">)])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">fragment</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">Text</span><span class="p">))</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>of_type</strong> – A Node subclass to match to.</p></li>
+<li><p><strong>f</strong> – Any callable object which will be given the node.</p></li>
+<li><p><strong>depth</strong> – The maximum depth to search for matching children.
+By default only immediate children are checked. Passing
+a negative value will search with no limit.</p></li>
+<li><p><strong>default</strong> – The value to return when no result is found.
+[default: None]</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="humanmark.ast.Node.extend">
+<span class="sig-name descname"><span class="pre">extend</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><a class="reference internal" href="#humanmark.ast.Node" title="humanmark.ast.Node"><span class="pre">humanmark.ast.Node</span></a></span></span><a class="headerlink" href="#humanmark.ast.Node.extend" title="Permalink to this definition">#</a></dt>
+<dd><p>Append one or more nodes to this Node’s list of children.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>value</strong> – An iterable of nodes. May also contain sub-iterables,
+which will be recursively flattended.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="humanmark.ast.Node.fix_missing_locations">
+<span class="sig-name descname"><span class="pre">fix_missing_locations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><a class="reference internal" href="#humanmark.ast.Node" title="humanmark.ast.Node"><span class="pre">humanmark.ast.Node</span></a></span></span><a class="headerlink" href="#humanmark.ast.Node.fix_missing_locations" title="Permalink to this definition">#</a></dt>
+<dd><p>Recursively populates line_no values on child nodes using the parent
+value.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="humanmark.ast.Node.is_allowed_child">
+<span class="sig-name descname"><span class="pre">is_allowed_child</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">child</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#humanmark.ast.Node" title="humanmark.ast.Node"><span class="pre">humanmark.ast.Node</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#humanmark.ast.Node.is_allowed_child" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns <cite>True</cite> if <cite>child</cite> is allowed to be directly under this node.</p>
+<p>It may still be possible for the child to be indirectly under this
+node, such as wrapping an inline in a paragraph.</p>
+<p>Called by methods like <cite>append()</cite> and <cite>extend()</cite> to ensure the children
+being added are valid.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>child</strong> – The node to be checked.</p>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="humanmark.ast.Node.tidy">
+<span class="sig-name descname"><span class="pre">tidy</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><a class="reference internal" href="#humanmark.ast.Node" title="humanmark.ast.Node"><span class="pre">humanmark.ast.Node</span></a></span></span><a class="headerlink" href="#humanmark.ast.Node.tidy" title="Permalink to this definition">#</a></dt>
+<dd><p>Removes some redundant markup.</p>
+<dl class="simple">
+<dt>This:</dt><dd><ul class="simple">
+<li><p>Removes stray Fragment’s under a container.</p></li>
+<li><p>Removes empty Text nodes.</p></li>
+<li><p>Merges adjacent Text nodes.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="humanmark.ast.Node.remove">
+<span class="sig-name descname"><span class="pre">remove</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">of_type</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">f</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><a class="reference internal" href="#humanmark.ast.Node" title="humanmark.ast.Node"><span class="pre">humanmark.ast.Node</span></a></span></span><a class="headerlink" href="#humanmark.ast.Node.remove" title="Permalink to this definition">#</a></dt>
+<dd><p>Removes all nodes that match the given conditions.</p>
+<p>For example, to remove all the text nodes that contain the word
+‘Mars’:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fragment</span> <span class="o">=</span> <span class="n">Fragment</span><span class="p">(</span><span class="n">children</span><span class="o">=</span><span class="p">[</span>
+<span class="gp">... </span>    <span class="n">Text</span><span class="p">(</span><span class="s1">'Hello Earth!'</span><span class="p">),</span>
+<span class="gp">... </span>    <span class="n">Text</span><span class="p">(</span><span class="s1">'Hello Mars!'</span><span class="p">),</span>
+<span class="gp">... </span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">fragment</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">Text</span><span class="p">,</span> <span class="n">f</span><span class="o">=</span><span class="k">lambda</span> <span class="n">n</span><span class="p">:</span> <span class="s1">'Mars'</span> <span class="ow">in</span> <span class="n">n</span><span class="o">.</span><span class="n">content</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>or to erase all inline HTML:</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">fragment</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">HTMLInline</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>of_type</strong> – A Node subclass to match to.</p></li>
+<li><p><strong>f</strong> – Any callable object which will be given the node.
+If the callable returns <cite>True</cite>, the node will be deleted.</p></li>
+<li><p><strong>depth</strong> – The maximum depth to search for matching children.
+By default only immediate children are checked. Passing
+a negative value will search with no limit.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="humanmark.ast.Node.unlink">
+<span class="sig-name descname"><span class="pre">unlink</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><a class="reference internal" href="#humanmark.ast.Node" title="humanmark.ast.Node"><span class="pre">humanmark.ast.Node</span></a></span></span><a class="headerlink" href="#humanmark.ast.Node.unlink" title="Permalink to this definition">#</a></dt>
+<dd><p>Remove this node from its parent.</p>
+<p>A node that has been unlinked is free to be moved to a new position in
+the tree or an entirely new tree.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="humanmark.ast.Node.delete">
+<span class="sig-name descname"><span class="pre">delete</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><a class="reference internal" href="#humanmark.ast.Node" title="humanmark.ast.Node"><span class="pre">humanmark.ast.Node</span></a></span></span><a class="headerlink" href="#humanmark.ast.Node.delete" title="Permalink to this definition">#</a></dt>
+<dd><p>Deletes the current node and returns the next sibling.</p>
+<p>Useful for traversing over child nodes and removing some.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="humanmark.ast.Node.replace">
+<span class="sig-name descname"><span class="pre">replace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">replacement</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#humanmark.ast.Node" title="humanmark.ast.Node"><span class="pre">humanmark.ast.Node</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><a class="reference internal" href="#humanmark.ast.Node" title="humanmark.ast.Node"><span class="pre">humanmark.ast.Node</span></a></span></span><a class="headerlink" href="#humanmark.ast.Node.replace" title="Permalink to this definition">#</a></dt>
+<dd><p>Replaces this node with <code class="docutils literal notranslate"><span class="pre">replacement</span></code> and unlinks it from its
+parent.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="humanmark.ast.Node.contained_by">
+<span class="sig-name descname"><span class="pre">contained_by</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">of_type</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#humanmark.ast.Node" title="humanmark.ast.Node"><span class="pre">humanmark.ast.Node</span></a><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#humanmark.ast.Node" title="humanmark.ast.Node"><span class="pre">humanmark.ast.Node</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#humanmark.ast.Node.contained_by" title="Permalink to this definition">#</a></dt>
+<dd><p>Returns <code class="docutils literal notranslate"><span class="pre">True</span></code> if this node is contained by a node <code class="docutils literal notranslate"><span class="pre">of_type</span></code>, not
+just as a direct parent but anywhere in the hierarchy.</p>
+<p><cite>of_type</cite> may also be a list of types, in which case this method
+with return <cite>True</cite> if this node is contained by <em>any</em> of the given
+types.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="humanmark.ast.Node.prepend_siblings">
+<span class="sig-name descname"><span class="pre">prepend_siblings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">others</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#humanmark.ast.Node" title="humanmark.ast.Node"><span class="pre">humanmark.ast.Node</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><a class="reference internal" href="#humanmark.ast.Node" title="humanmark.ast.Node"><span class="pre">humanmark.ast.Node</span></a></span></span><a class="headerlink" href="#humanmark.ast.Node.prepend_siblings" title="Permalink to this definition">#</a></dt>
+<dd><p>Prepends all nodes in <cite>others</cite> to this node.</p>
+<p>Returns the node at the end of <cite>others</cite>.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="humanmark.ast.Node.prepend_sibling">
+<span class="sig-name descname"><span class="pre">prepend_sibling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#humanmark.ast.Node" title="humanmark.ast.Node"><span class="pre">humanmark.ast.Node</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><a class="reference internal" href="#humanmark.ast.Node" title="humanmark.ast.Node"><span class="pre">humanmark.ast.Node</span></a></span></span><a class="headerlink" href="#humanmark.ast.Node.prepend_sibling" title="Permalink to this definition">#</a></dt>
+<dd><p>Prepends the node <cite>other</cite> before this node.</p>
+<p>As a shortcut, the <cite>&lt;&lt;</cite> operator can be used instead. For example,
+to insert a header before an existing paragraph:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Paragraph</span><span class="p">(</span><span class="n">children</span><span class="o">=</span><span class="p">[</span><span class="n">Text</span><span class="p">(</span><span class="s1">'Hello!'</span><span class="p">)])</span> <span class="o">&lt;&lt;</span> <span class="n">Header</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="humanmark.ast.Node.append_siblings">
+<span class="sig-name descname"><span class="pre">append_siblings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">others</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Iterable</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#humanmark.ast.Node" title="humanmark.ast.Node"><span class="pre">humanmark.ast.Node</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><a class="reference internal" href="#humanmark.ast.Node" title="humanmark.ast.Node"><span class="pre">humanmark.ast.Node</span></a></span></span><a class="headerlink" href="#humanmark.ast.Node.append_siblings" title="Permalink to this definition">#</a></dt>
+<dd><p>Appends all nodes in <cite>others</cite> after this node.</p>
+<p>Returns the node at the end of <cite>others</cite>.</p>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="humanmark.ast.Node.append_sibling">
+<span class="sig-name descname"><span class="pre">append_sibling</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="#humanmark.ast.Node" title="humanmark.ast.Node"><span class="pre">humanmark.ast.Node</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><a class="reference internal" href="#humanmark.ast.Node" title="humanmark.ast.Node"><span class="pre">humanmark.ast.Node</span></a></span></span><a class="headerlink" href="#humanmark.ast.Node.append_sibling" title="Permalink to this definition">#</a></dt>
+<dd><p>Inserts the node <cite>other</cite> after this node.</p>
+<p>As a shortcut, the <cite>&gt;&gt;</cite> operator can be used instead. For example,
+to insert a paragraph after an existing header:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">Header</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="o">&gt;&gt;</span> <span class="n">Paragraph</span><span class="p">(</span><span class="n">children</span><span class="o">=</span><span class="p">[</span><span class="n">Text</span><span class="p">(</span><span class="s1">'Hello!'</span><span class="p">)])</span>
+</pre></div>
+</div>
+</dd></dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="humanmark.ast.Node.to_dict">
+<span class="sig-name descname"><span class="pre">to_dict</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">→</span> <span class="sig-return-typehint"><span class="pre">Dict</span></span></span><a class="headerlink" href="#humanmark.ast.Node.to_dict" title="Permalink to this definition">#</a></dt>
+<dd><p>Recursively dump this node and all of its children to a dict.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="humanmark.ast.Fragment">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">humanmark.ast.</span></span><span class="sig-name descname"><span class="pre">Fragment</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_no</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#humanmark.ast.Fragment" title="Permalink to this definition">#</a></dt>
+<dd><p>A fragment of Markdown that serves no purpose in rendering. It simply
+acts as a container.</p>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="humanmark.ast.Text">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">humanmark.ast.</span></span><span class="sig-name descname"><span class="pre">Text</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_no</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#humanmark.ast.Text" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="humanmark.ast.ThematicBreak">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">humanmark.ast.</span></span><span class="sig-name descname"><span class="pre">ThematicBreak</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">char</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_no</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#humanmark.ast.ThematicBreak" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="humanmark.ast.HTMLBlock">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">humanmark.ast.</span></span><span class="sig-name descname"><span class="pre">HTMLBlock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_no</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#humanmark.ast.HTMLBlock" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="humanmark.ast.HTMLInline">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">humanmark.ast.</span></span><span class="sig-name descname"><span class="pre">HTMLInline</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">content</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_no</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#humanmark.ast.HTMLInline" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="humanmark.ast.Header">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">humanmark.ast.</span></span><span class="sig-name descname"><span class="pre">Header</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_no</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#humanmark.ast.Header" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="humanmark.ast.Paragraph">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">humanmark.ast.</span></span><span class="sig-name descname"><span class="pre">Paragraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_no</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#humanmark.ast.Paragraph" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="humanmark.ast.List">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">humanmark.ast.</span></span><span class="sig-name descname"><span class="pre">List</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_no</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">start</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#humanmark.ast.List" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="humanmark.ast.ListItem">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">humanmark.ast.</span></span><span class="sig-name descname"><span class="pre">ListItem</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_no</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bullet</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'-'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#humanmark.ast.ListItem" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="humanmark.ast.BlockQuote">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">humanmark.ast.</span></span><span class="sig-name descname"><span class="pre">BlockQuote</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_no</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#humanmark.ast.BlockQuote" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="humanmark.ast.CodeBlock">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">humanmark.ast.</span></span><span class="sig-name descname"><span class="pre">CodeBlock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_no</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">infostring</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fenced</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fencechar</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'`'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#humanmark.ast.CodeBlock" title="Permalink to this definition">#</a></dt>
+<dd><p>A block of code.</p>
+<p>If <code class="docutils literal notranslate"><span class="pre">fenced</span></code> is <code class="docutils literal notranslate"><span class="pre">False</span></code>, the codeblock will be indented instead.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>infostring</strong> – Optional text that will follow the start of the fence.
+Typically used to specify a syntax highlighting
+language. [default: None]</p></li>
+<li><p><strong>fenced</strong> – Should this code block be fenced or indented.
+Defaults to True only if an infostring is provided.
+[default: False]</p></li>
+<li><p><strong>fencechar</strong> – The character to use for a fenced code block. Must be
+one of ‘`’ or ‘~’. [default: `]</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="humanmark.ast.Strong">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">humanmark.ast.</span></span><span class="sig-name descname"><span class="pre">Strong</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_no</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#humanmark.ast.Strong" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="humanmark.ast.Emphasis">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">humanmark.ast.</span></span><span class="sig-name descname"><span class="pre">Emphasis</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_no</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#humanmark.ast.Emphasis" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="humanmark.ast.Strike">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">humanmark.ast.</span></span><span class="sig-name descname"><span class="pre">Strike</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_no</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#humanmark.ast.Strike" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="humanmark.ast.Link">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">humanmark.ast.</span></span><span class="sig-name descname"><span class="pre">Link</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_no</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#humanmark.ast.Link" title="Permalink to this definition">#</a></dt>
+<dd><p>A container for a hyperlink.</p>
+<p>If a reference is provided, it will be used when emitting a link instead of
+the full URL, with the actual URL being emitted elsewhere. In a markdown
+document, these references would typically end up at the bottom of the
+document.</p>
+<p>If the url and the text are identical, the link is assumed to be an
+autolink.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> – The relative or absolute URL to target.</p></li>
+<li><p><strong>reference</strong> – A reference label to emit instead of the full URL.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py property">
+<dt class="sig sig-object py" id="humanmark.ast.Link.is_autolink">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_autolink</span></span><a class="headerlink" href="#humanmark.ast.Link.is_autolink" title="Permalink to this definition">#</a></dt>
+<dd><p><cite>True</cite> if this link should be rendered as an autolink.</p>
+</dd></dl>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="humanmark.ast.InlineCode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">humanmark.ast.</span></span><span class="sig-name descname"><span class="pre">InlineCode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_no</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#humanmark.ast.InlineCode" title="Permalink to this definition">#</a></dt>
+<dd></dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="humanmark.ast.Image">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">humanmark.ast.</span></span><span class="sig-name descname"><span class="pre">Image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">url</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_no</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#humanmark.ast.Image" title="Permalink to this definition">#</a></dt>
+<dd><p>A container for an image.</p>
+<p>If a reference is provided, it will be used when emitting a link instead of
+the full URL, with the actual URL being emitted elsewhere. In a markdown
+document, these references would typically end up at the bottom of the
+document.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>url</strong> – The relative or absolute URL to target.</p></li>
+<li><p><strong>title</strong> – A title for the image.</p></li>
+<li><p><strong>reference</strong> – A reference label to emit instead of the full URL.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="humanmark.ast.SoftBreak">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">humanmark.ast.</span></span><span class="sig-name descname"><span class="pre">SoftBreak</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line_no</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">children</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#humanmark.ast.SoftBreak" title="Permalink to this definition">#</a></dt>
+<dd><p>In markdown, a softbreak represents a literal newline (<code class="docutils literal notranslate"><span class="pre">\n</span></code>).</p>
+<p>Various rendering formats may discard a SoftBreak if it will have no
+impact on the final result, such as in HTML.</p>
+</dd></dl>
+</section>
+
+        </article>
+      </div>
+      <footer>
+        
+        <div class="related-pages">
+          <a class="next-page" href="../contributing.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">Contributing</div>
+              </div>
+              <svg><use href="#svg-arrow-right"></use></svg>
+            </a>
+          <a class="prev-page" href="humanmark.parse.html">
+              <svg><use href="#svg-arrow-right"></use></svg>
+              <div class="page-info">
+                <div class="context">
+                  <span>Previous</span>
+                </div>
+                
+                <div class="title">Parsing &amp; Rendering</div>
+                
+              </div>
+            </a>
+        </div>
+        <div class="bottom-of-page">
+          <div class="left-details">
+            <div class="copyright">
+                Copyright &#169; 2021, Tyler Kennedy
+            </div>
+            Made with <a href="https://www.sphinx-doc.org/">Sphinx</a> and <a class="muted-link" href="https://pradyunsg.me">@pradyunsg</a>'s
+            
+            <a href="https://github.com/pradyunsg/furo">Furo</a>
+            
+          </div>
+          <div class="right-details">
+            <div class="icons">
+              
+            </div>
+          </div>
+        </div>
+        
+      </footer>
+    </div>
+    <aside class="toc-drawer no-toc">
+      
+      
+      
+    </aside>
+  </div>
+</div><script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+    <script src="../_static/jquery.js"></script>
+    <script src="../_static/underscore.js"></script>
+    <script src="../_static/doctools.js"></script>
+    <script src="../_static/scripts/furo.js"></script>
+    </body>
+</html>
